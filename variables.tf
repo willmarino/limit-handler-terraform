@@ -18,8 +18,3 @@ variable "bastion_public_key_staging" {
   description = "Bastion host public key"
   type        = string
 }
-
-variable "a" {
-  description = "b"
-  type        = string
-}
