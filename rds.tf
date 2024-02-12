@@ -82,10 +82,3 @@ resource "random_password" "rds_root_password" {
   length  = 25
   special = false
 }
-
-
-
-
-
-
-
