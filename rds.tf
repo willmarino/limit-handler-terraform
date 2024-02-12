@@ -1,13 +1,8 @@
-locals {
-  rds_db_name = "${var.env}-lh-aurora-mysql"
-}
-
-
 module "rds-aurora-db" {
   source  = "terraform-aws-modules/rds-aurora/aws"
   version = "~> 7.7.1"
 
-  name           = locals.rds_db_name
+  name           = "${var.env}-lh-aurora-mysql"
   engine         = "aurora-mysql"
   engine_version = "8.0"
   instance_class = "db.t3.micro"
@@ -37,9 +32,9 @@ module "rds-aurora-db" {
   skip_final_snapshot = var.env != "production"
 
   create_db_parameter_group      = true
-  db_parameter_group_name        = "${locals.rds_db_name}-parameter-group"
+  db_parameter_group_name        = "${var.env}-lh-aurora-mysql-parameter-group"
   db_parameter_group_family      = "aurora-mysql8.0"
-  db_parameter_group_description = "${locals.rds_db_name} example DB parameter group"
+  db_parameter_group_description = "${var.env}-lh-aurora-mysql example DB parameter group"
   db_parameter_group_parameters = [{
     name         = "connect_timeout"
     value        = 10
