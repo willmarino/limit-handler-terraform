@@ -79,7 +79,7 @@ module "rds-aurora-db" {
 }
 
 resource "random_password" "rds_root_password" {
-  length  = 30
+  length  = 25
   special = false
 }
 
