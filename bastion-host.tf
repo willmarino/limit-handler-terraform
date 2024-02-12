@@ -4,9 +4,9 @@ resource "access_key" "bastion" {
 }
 
 module "ec2-bastion" {
-  source = "cloudposse/ec2-bastion-server/aws"
-  # version = "~> 0.30.1"
-  ami = "ami-0f0a8b9bc31bd649b"
+  source  = "cloudposse/ec2-bastion-server/aws"
+  version = "~> 0.30.1"
+  ami     = "ami-0f0a8b9bc31bd649b"
 
   environment = var.env
 
