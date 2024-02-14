@@ -1,12 +1,12 @@
 module "rds-aurora-db" {
   source  = "terraform-aws-modules/rds-aurora/aws"
-  version = "~> 7.7.1"
+  version = "~> 9.0.0"
 
   name           = "${var.env}-lh-aurora-mysql"
   engine         = "aurora-mysql"
   engine_version = "8.0"
   instance_class = "db.t3.small"
-  instances = { one = {} }
+  instances      = { one = {} }
 
   create_db_subnet_group = false
   create_security_group  = true
@@ -20,10 +20,12 @@ module "rds-aurora-db" {
 
   // This allows me to connect via the bastion for workbench access
   // and allows applications running in the private subnets of my VPC to have access as well
-  allowed_cidr_blocks = concat(
-    ["${module.ec2-bastion.private_ip}/32"],
-    module.vpc.private_subnets_cidr_blocks
-  )
+  security_group_rules = {
+    ex1_ingress = concat(
+      ["${module.ec2-bastion.private_ip}/32"],
+      module.vpc.private_subnets_cidr_blocks
+    )
+  }
 
   iam_database_authentication_enabled = false
   master_password                     = random_password.rds_root_password.result
