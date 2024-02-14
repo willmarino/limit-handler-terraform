@@ -6,7 +6,7 @@ module "rds-aurora-db" {
   engine         = "aurora-mysql"
   engine_version = "8.0"
   instance_class = "db.t3.micro"
-  instances = { one: {} }
+  instances = { one = {} }
 
   create_db_subnet_group = false
   create_security_group  = true
