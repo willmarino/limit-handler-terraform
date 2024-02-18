@@ -1,77 +1,24 @@
-module "rds-aurora-db" {
-  source  = "terraform-aws-modules/rds-aurora/aws"
-  version = "~> 9.0.0"
+module "db" {
+  source  = "terraform-aws-modules/rds/aws"
+  version = "~> 6.4.0"
 
-  name           = "${var.env}-lh-aurora-mysql"
-  engine         = "aurora-mysql"
-  engine_version = "8.0"
-  instance_class = "db.t3.medium"
-  instances      = { one = {} }
+  identifier = "${var.env}-limit-handler-db"
 
-  create_db_subnet_group = false
-  create_security_group  = true
+  engine            = "mysql"
+  engine_version    = "8.0"
+  instance_class    = "db.t2.micro"
+  allocated_storage = 2
 
-  deletion_protection     = var.env == "production"
-  preferred_backup_window = "07:00-08:00"
+  db_name  = "limit_handler"
+  username = "root"
+  password = random_password.rds_root_password.result
+  port     = 3306
 
-  vpc_id               = module.vpc.vpc_id
-  db_subnet_group_name = module.vpc.database_subnet_group_name
-  subnets              = module.vpc.database_subnets
+  subnet_ids           = module.vpc.database_subnets
+  parameter_group_name = "${var.env}-limit-handler-db-parameter-group"
 
-  // This allows me to connect via the bastion for workbench access
-  // and allows applications running in the private subnets of my VPC to have access as well
-  security_group_rules = {
-    # ex1_ingress = concat(
-    #   ["${module.ec2-bastion.private_ip}/32"],
-    #   module.vpc.private_subnets_cidr_blocks
-    # )
+  deletion_protection = var.env == "production"
 
-    ingress_1 = {
-      cidr_blocks = concat(
-        ["${module.ec2-bastion.private_ip}/32"],
-        module.vpc.private_subnets_cidr_blocks
-      )
-
-    }
-
-  }
-
-  iam_database_authentication_enabled = false
-  master_password                     = random_password.rds_root_password.result
-  master_username                     = "root"
-
-  apply_immediately   = true
-  skip_final_snapshot = var.env != "production"
-
-  create_db_parameter_group      = true
-  db_parameter_group_name        = "${var.env}-lh-aurora-mysql-parameter-group"
-  db_parameter_group_family      = "aurora-mysql8.0"
-  db_parameter_group_description = "${var.env}-lh-aurora-mysql example DB parameter group"
-  db_parameter_group_parameters = [{
-    name         = "connect_timeout"
-    value        = 10
-    apply_method = "immediate"
-    }, {
-    name         = "general_log"
-    value        = 0
-    apply_method = "immediate"
-    }, {
-    name         = "innodb_lock_wait_timeout"
-    value        = 10
-    apply_method = "immediate"
-    }, {
-    name         = "log_output"
-    value        = "FILE"
-    apply_method = "pending-reboot"
-    }, {
-    name         = "max_connections"
-    value        = 200
-    apply_method = "immediate"
-    }
-  ]
-
-  enabled_cloudwatch_logs_exports = ["audit", "error", "general", "slowquery"]
-  security_group_use_name_prefix  = false
 }
 
 
