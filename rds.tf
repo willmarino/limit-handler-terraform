@@ -4,10 +4,11 @@ module "db" {
 
   identifier = "${var.env}-limit-handler-db"
 
-  engine            = "mysql"
-  engine_version    = "8.0"
-  instance_class    = "db.t2.micro"
-  allocated_storage = 2
+  engine               = "mysql"
+  major_engine_version = "8.0"
+  engine_version       = "8.0.28"
+  instance_class       = "db.t2.micro"
+  allocated_storage    = 2
 
   db_name  = "limit_handler"
   username = "root"
@@ -18,6 +19,8 @@ module "db" {
   parameter_group_name = "${var.env}-limit-handler-db-parameter-group"
 
   deletion_protection = var.env == "production"
+
+  family = "mysql8.0"
 
 }
 
