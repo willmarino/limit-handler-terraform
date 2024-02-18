@@ -8,7 +8,7 @@ module "db" {
   major_engine_version = "8.0"
   engine_version       = "8.0.28"
   instance_class       = "db.t2.micro"
-  allocated_storage    = 2
+  allocated_storage    = 8
 
   db_name  = "limit_handler"
   username = "root"
