@@ -23,7 +23,6 @@ module "db" {
   family = "mysql8.0"
 
   storage_encrypted = false
-
 }
 
 
