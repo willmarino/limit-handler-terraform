@@ -17,6 +17,7 @@ module "db" {
   password = random_password.rds_root_password.result
   port     = 3306
 
+  db_subnet_group_name = module.vpc.database_subnet_group_name
   subnet_ids           = module.vpc.database_subnets
   parameter_group_name = "${var.env}-limit-handler-db-parameter-group"
 
