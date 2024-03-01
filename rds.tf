@@ -30,7 +30,7 @@ module "db" {
 resource "aws_security_group" "allow_lh_connections" {
   name        = "${var.env}-allow-lh-connections"
   description = "Allows connections and queries from the limit handler api server"
-  vpc_id      = module.vpc.id
+  vpc_id      = module.vpc.vpc_id
 
   egress = {
     from_port   = 0
