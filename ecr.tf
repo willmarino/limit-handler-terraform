@@ -8,32 +8,32 @@ resource "aws_ecr_repository" "limit_handler" {
 }
 
 
-resource "aws_ecr_repository_policy" "limit_handler" {
-  repository = aws_ecr_repository.limit_handler.name
-  policy     = data.aws_iam_policy_document.limit_handler.json
-}
+# resource "aws_ecr_repository_policy" "limit_handler" {
+#   repository = aws_ecr_repository.limit_handler.name
+#   policy     = data.aws_iam_policy_document.limit_handler.json
+# }
 
 
-// IAM policy
-data "aws_iam_policy_document" "limit_handler" {
-  statement {
-    sid = "lh allow interactions"
+# // IAM policy
+# data "aws_iam_policy_document" "limit_handler" {
+#   statement {
+#     sid = "lh allow interactions"
 
-    actions = [
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:BatchGetImage",
-      "ecr:CompleteLayerUpload",
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:GetLifecyclePolicy",
-      "ecr:InitiateLayerUpload",
-      "ecr:PutImage",
-      "ecr:UploadLayerPart"
-    ]
+#     actions = [
+#       "ecr:BatchCheckLayerAvailability",
+#       "ecr:BatchGetImage",
+#       "ecr:CompleteLayerUpload",
+#       "ecr:GetDownloadUrlForLayer",
+#       "ecr:GetLifecyclePolicy",
+#       "ecr:InitiateLayerUpload",
+#       "ecr:PutImage",
+#       "ecr:UploadLayerPart"
+#     ]
 
-    // TODO restrict this to a specific IAM user?
-    principals {
-      type        = "*"
-      identifiers = ["*"]
-    }
-  }
-}
+#     // TODO restrict this to a specific IAM user?
+#     principals {
+#       type        = "*"
+#       identifiers = ["*"]
+#     }
+#   }
+# }
