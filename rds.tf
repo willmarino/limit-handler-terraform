@@ -34,10 +34,15 @@ resource "aws_security_group" "allow_lh_connections" {
 
   ingress = [
     {
-      from_port   = 0
-      to_port     = 0
-      protocol    = "-1"
-      cidr_blocks = module.vpc.private_subnets // TODO When I turn the bastion back on, conact its cidr range here
+      description      = "Allow all traffic from private subnets on any port" // TODO restrict to 3306
+      from_port        = 0
+      to_port          = 0
+      protocol         = "-1"
+      cidr_blocks      = module.vpc.private_subnets // TODO When I turn the bastion back on, conact its cidr range here
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      security_groups  = []
+      self             = false
     }
   ]
 
