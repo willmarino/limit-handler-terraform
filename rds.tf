@@ -38,8 +38,8 @@ resource "aws_security_group" "allow_lh_connections" {
       from_port        = 0
       to_port          = 0
       protocol         = "-1"
-      cidr_blocks      = module.vpc.private_subnets // TODO When I turn the bastion back on, conact its cidr range here
-      ipv6_cidr_blocks = []
+      cidr_blocks      = module.vpc.private_subnets_cidr_blocks // TODO When I turn the bastion back on, conact its cidr range here
+      ipv6_cidr_blocks = module.vpc.private_subnets_ipv6_cidr_blocks
       prefix_list_ids  = []
       security_groups  = []
       self             = false
