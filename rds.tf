@@ -32,12 +32,14 @@ resource "aws_security_group" "allow_lh_connections" {
   description = "Allows connections and queries from the limit handler api server"
   vpc_id      = module.vpc.vpc_id
 
-  egress = {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = concat(module.vpc.public_subnets, module.vpc.private_subnets)
-  }
+  ingress = [
+    {
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_blocks = module.vpc.private_subnets // TODO When I turn the bastion back on, conact its cidr range here
+    }
+  ]
 
 
 }
