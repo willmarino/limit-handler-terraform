@@ -14,10 +14,9 @@ variable "region" {
   default     = "us-east-1"
 }
 
-variable "bastion_public_key_staging" {
-  description = "Bastion host public key"
-  type        = string
-  default     = "default"
-}
+# variable "bastion_public_key_staging" {
+#   description = "Bastion host public key"
+#   type        = string
+# }
 
 
