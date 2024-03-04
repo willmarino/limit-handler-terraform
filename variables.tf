@@ -17,6 +17,7 @@ variable "region" {
 variable "bastion_public_key_staging" {
   description = "Bastion host public key"
   type        = string
+  default     = "default"
 }
 
 
