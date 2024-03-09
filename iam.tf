@@ -24,8 +24,9 @@ resource "aws_iam_user_policy" "gh_actions" {
           "ecr:UploadLayerPart",
           "ecr:GetAuthorizationToken"
         ],
-        Effect   = "Allow",
-        Resource = "${aws_ecr_repository.limit_handler.arn}"
+        Effect = "Allow",
+        # Resource = "${aws_ecr_repository.limit_handler.arn}"
+        Resource = "*"
       }
     ]
   })
