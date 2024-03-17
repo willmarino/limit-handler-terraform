@@ -32,3 +32,46 @@ resource "aws_iam_user_policy" "gh_actions" {
   })
 
 }
+
+
+resource "aws_iam_role" "lh_task_role" {
+  name = "limit_handler_ecs_task_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      },
+    ]
+  })
+
+  inline_policy {
+    name = "limit_handler_ecs_task_inline_policy"
+
+    policy = jsonencode({
+      Version : "2012-10-17",
+      Statement : [
+        {
+          Effect : "Allow",
+          Action : [
+            "ssmmessages:OpenDataChannel",
+            "ssmmessages:CreateControlChannel",
+            "ssmmessages:CreateDataChannel",
+            "ssmmessages:OpenControlChannel"
+          ],
+          Resource : "*"
+        }
+      ]
+    })
+  }
+
+
+}
+
+
