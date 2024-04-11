@@ -15,8 +15,9 @@ variable "region" {
 }
 
 variable "limit-handler-name" {
-  description = "limit-handler"
+  description = "limit-handler name"
   type        = string
+  default     = "limit-handler"
 }
 
 
