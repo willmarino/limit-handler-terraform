@@ -1,4 +1,4 @@
-resource "aws_route53_zone" "private_internal" {
+resource "aws_route53_zone" "limit_handler" {
   name = "lh-${var.env}.com"
 
   vpc {
@@ -6,8 +6,8 @@ resource "aws_route53_zone" "private_internal" {
   }
 }
 
-resource "aws_route53_record" "elasticache_primary_node_proxyname" {
-  zone_id = aws_route53_zone.private_internal.zone_id
+resource "aws_route53_record" "elasticache_endpoint" {
+  zone_id = aws_route53_zone.limit_handler.zone_id
   name    = "elasticache-endpoint-${var.env}"
   type    = "CNAME"
   ttl     = 300
