@@ -164,7 +164,7 @@ resource "aws_ecs_task_definition" "limit_handler" {
     essential = true
 
     environment = [
-      { name = DD_TAGS, value = "env:${var.env}" }
+      { "name" : "DD_TAGS", "value" : "env:${var.env}" }
     ]
 
     portMappings = [{
