@@ -15,8 +15,4 @@ module "redis" {
   at_rest_encryption_enabled = false
   transit_encryption_enabled = false
 
-  # Choosing to have the creation of this module depend on the creation of the leo ECS service
-  depends_on = [
-    module.ecs
-  ]
 }
