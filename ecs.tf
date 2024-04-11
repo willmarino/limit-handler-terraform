@@ -110,7 +110,7 @@ resource "aws_ecs_task_definition" "limit_handler" {
 
   container_definitions = jsonencode([{
     name    = "${var.env}-${var.limit-handler-name}-container"
-    image   = "${module.ecr["${var.env}-limit-handler"].repository_url}:latest"
+    image   = "${aws_ecr_repository.limit_handler.repository_url}:latest"
     command = ["node", "app.js"]
 
     essential = true
