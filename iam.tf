@@ -75,3 +75,66 @@ resource "aws_iam_role" "lh_task_role" {
 }
 
 
+
+resource "aws_iam_role" "lh_task_execution_role" {
+  name = "tf-${var.env}-ecs-task-exec-role"
+
+  assume_role_policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Action" : "sts:AssumeRole",
+        "Principal" : {
+          "Service" : "ecs-tasks.amazonaws.com"
+        },
+        "Effect" : "Allow",
+        "Sid" : ""
+      }
+    ]
+  })
+
+  inline_policy {
+    name = "tf-${var.env}-ecs-task-exec-role-inline-policy"
+    policy = jsonencode({
+      "Version" : "2012-10-17",
+      "Statement" : [
+        {
+          "Effect" : "Allow",
+          "Action" : [
+            "kms:Decrypt",
+            "s3:GetObject"
+          ],
+          "Resource" : [
+            "arn:aws:s3:::tf-${var.env}-env-files/*",
+            "${aws_kms_key.lh_env_files_key.arn}"
+          ]
+        },
+        {
+          "Effect" : "Allow",
+          "Action" : [
+            "s3:GetBucketLocation"
+          ],
+          "Resource" : [
+            "arn:aws:s3:::tf-${var.env}-env-files"
+          ]
+        },
+        {
+          "Effect" : "Allow",
+          "Action" : [
+            "ecr:GetAuthorizationToken",
+            "ecr:BatchCheckLayerAvailability",
+            "ecr:GetDownloadUrlForLayer",
+            "ecr:BatchGetImage",
+            "ssmmessages:OpenDataChannel",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents",
+            "ssmmessages:CreateControlChannel",
+            "ssmmessages:CreateDataChannel",
+            "ssmmessages:OpenControlChannel"
+          ],
+          "Resource" : "*"
+        }
+      ]
+    })
+  }
+}
