@@ -106,7 +106,7 @@ resource "aws_iam_role" "lh_task_execution_role" {
           ],
           "Resource" : [
             "arn:aws:s3:::tf-${var.env}-env-files/*",
-            "${aws_kms_key.env_files_key.arn}"
+            "${aws_kms_key.lh_env_files_key.arn}"
           ]
         },
         {
