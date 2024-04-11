@@ -101,7 +101,7 @@ resource "aws_alb_listener" "https" {
 // Limit handler task definition
 resource "aws_ecs_task_definition" "limit_handler" {
   family                   = "${var.env}-${var.limit-handler-name}-ecs-task"
-  network_mode             = "vpc"
+  network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = 256
   memory                   = 512
