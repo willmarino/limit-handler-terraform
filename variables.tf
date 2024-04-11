@@ -13,3 +13,22 @@ variable "region" {
   type        = string
   default     = "us-east-1"
 }
+
+variable "limit-handler-name" {
+  description = "limit-handler"
+  type        = string
+}
+
+
+variable "datadog_api_key" {
+  description = "datadog api key"
+  type        = string
+}
+
+variable "cf_origin_cert_body" {
+  description = "cloudflare origin cert body"
+}
+
+variable "cf_origin_cert_private_key" {
+  description = "cloudflare origin cert private key"
+}
