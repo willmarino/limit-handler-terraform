@@ -26,7 +26,7 @@ resource "aws_security_group" "limit_handler_alb" {
 }
 
 // LH api server security group, only takes in traffic from infra under the ALB security group
-resource "aws_security_group" "limit-handler" {
+resource "aws_security_group" "limit_handler" {
   name   = "${var.env}-${var.limit-handler-name}-ecs-sg"
   vpc_id = module.vpc.vpc_id
 
@@ -99,7 +99,7 @@ resource "aws_alb_listener" "https" {
 }
 
 // Limit handler task definition
-resource "aws_ecs_task_definition" "limit-handler" {
+resource "aws_ecs_task_definition" "limit_handler" {
   family                   = "${var.env}-${var.limit-handler-name}-ecs-task"
   network_mode             = "vpc"
   requires_compatibilities = ["FARGATE"]
@@ -178,7 +178,7 @@ resource "aws_ecs_task_definition" "limit-handler" {
   }
 }
 
-resource "aws_ecs_cluster" "ecs" {
+resource "aws_ecs_cluster" "limit_handler" {
   name = "${var.env}-${var.limit-handler-name}-ecs-cluster"
 
   setting {
@@ -189,8 +189,8 @@ resource "aws_ecs_cluster" "ecs" {
 
 resource "aws_ecs_service" "limit_handler" {
   name                               = "${var.env}-${var.limit-handler-name}-ecs-service"
-  cluster                            = aws_ecs_cluster.ecs.id
-  task_definition                    = aws_ecs_task_definition.ecs.arn
+  cluster                            = aws_ecs_cluster.limit_handler.id
+  task_definition                    = aws_ecs_task_definition.limit_handler.arn
   desired_count                      = 1
   deployment_minimum_healthy_percent = 50
   deployment_maximum_percent         = 200
@@ -203,7 +203,7 @@ resource "aws_ecs_service" "limit_handler" {
   enable_execute_command = true
 
   network_configuration {
-    security_groups = [aws_security_group.limit-handler.id]
+    security_groups = [aws_security_group.limit_handler.id]
     subnets         = module.vpc.private_subnets
   }
 
