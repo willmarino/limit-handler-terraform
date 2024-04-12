@@ -9,7 +9,7 @@ module "env_files" {
   block_public_policy = true
 
   control_object_ownership = true
-  object_ownership         = "BucketOwnerPreferred"
+  object_ownership         = "ObjectWriter"
 
   server_side_encryption_configuration = {
     rule = {
