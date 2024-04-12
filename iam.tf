@@ -115,7 +115,9 @@ resource "aws_iam_role" "lh_task_execution_role" {
             "s3:GetBucketLocation"
           ],
           "Resource" : [
-            "arn:aws:s3:::lh-${var.env}-env-files"
+            "arn:aws:s3:::lh-${var.env}-env-files",
+            "arn:aws:s3:::lh-${var.env}-env-files/",
+            "arn:aws:s3:::lh-${var.env}-env-files/*"
           ]
         },
         {
