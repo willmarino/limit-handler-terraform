@@ -105,7 +105,7 @@ resource "aws_iam_role" "lh_task_execution_role" {
             "s3:GetObject"
           ],
           "Resource" : [
-            "arn:aws:s3:::tf-${var.env}-env-files/*",
+            "arn:aws:s3:::lh-${var.env}-env-files/*",
             "${aws_kms_key.lh_env_files_key.arn}"
           ]
         },
@@ -115,7 +115,7 @@ resource "aws_iam_role" "lh_task_execution_role" {
             "s3:GetBucketLocation"
           ],
           "Resource" : [
-            "arn:aws:s3:::tf-${var.env}-env-files"
+            "arn:aws:s3:::lh-${var.env}-env-files"
           ]
         },
         {
