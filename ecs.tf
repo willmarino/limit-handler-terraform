@@ -98,85 +98,85 @@ resource "aws_alb_listener" "https" {
   }
 }
 
-// Limit handler task definition
-resource "aws_ecs_task_definition" "limit_handler" {
-  family                   = "${var.env}-${var.limit-handler-name}-ecs-task"
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  cpu                      = 256
-  memory                   = 512
-  execution_role_arn       = aws_iam_role.lh_task_execution_role.arn
-  task_role_arn            = aws_iam_role.lh_task_role.arn
+# // Limit handler task definition
+# resource "aws_ecs_task_definition" "limit_handler" {
+#   family                   = "${var.env}-${var.limit-handler-name}-ecs-task"
+#   network_mode             = "awsvpc"
+#   requires_compatibilities = ["FARGATE"]
+#   cpu                      = 256
+#   memory                   = 512
+#   execution_role_arn       = aws_iam_role.lh_task_execution_role.arn
+#   task_role_arn            = aws_iam_role.lh_task_role.arn
 
-  container_definitions = jsonencode([{
-    name    = "${var.env}-${var.limit-handler-name}-container"
-    image   = "${aws_ecr_repository.limit_handler.repository_url}:latest"
-    command = ["node", "app.js"]
+#   container_definitions = jsonencode([{
+#     name    = "${var.env}-${var.limit-handler-name}-container"
+#     image   = "${aws_ecr_repository.limit_handler.repository_url}:latest"
+#     command = ["node", "app.js"]
 
-    essential = true
+#     essential = true
 
-    logConfiguration = {
-      logDriver = "awsfirelens",
-      options = {
-        # https://docs.datadoghq.com/integrations/fluentbit/#configuration-parameters
-        Name           = "datadog"
-        Host           = "http-intake.logs.us5.datadoghq.com"
-        compress       = "gzip"
-        TLS            = "on"
-        apikey         = var.datadog_api_key
-        dd_service     = "limit-handler"
-        dd_source      = "limit-handler"
-        dd_message_key = "log"
-        dd_tags        = "env:${var.env}"
-        provider       = "ecs"
-      }
-    }
+#     logConfiguration = {
+#       logDriver = "awsfirelens",
+#       options = {
+#         # https://docs.datadoghq.com/integrations/fluentbit/#configuration-parameters
+#         Name           = "datadog"
+#         Host           = "http-intake.logs.us5.datadoghq.com"
+#         compress       = "gzip"
+#         TLS            = "on"
+#         apikey         = var.datadog_api_key
+#         dd_service     = "limit-handler"
+#         dd_source      = "limit-handler"
+#         dd_message_key = "log"
+#         dd_tags        = "env:${var.env}"
+#         provider       = "ecs"
+#       }
+#     }
 
-    environmentFiles = [{
-      value = "arn:aws:s3:::lh-${var.env}-env-files/${var.limit-handler-name}.env",
-      type  = "s3"
-    }]
+#     environmentFiles = [{
+#       value = "arn:aws:s3:::lh-${var.env}-env-files/${var.limit-handler-name}.env",
+#       type  = "s3"
+#     }]
 
-    linuxParameters = {
-      initProcessEnabled = true
-    }
+#     linuxParameters = {
+#       initProcessEnabled = true
+#     }
 
-    portMappings = [{
-      protocol      = "tcp"
-      containerPort = 5050
-    }]
-    }, {
-    image     = "amazon/aws-for-fluent-bit:stable"
-    name      = "${var.env}-${var.limit-handler-name}-log-router"
-    essential = true
+#     portMappings = [{
+#       protocol      = "tcp"
+#       containerPort = 5050
+#     }]
+#     }, {
+#     image     = "amazon/aws-for-fluent-bit:stable"
+#     name      = "${var.env}-${var.limit-handler-name}-log-router"
+#     essential = true
 
-    memoryReservation = 50
+#     memoryReservation = 50
 
-    firelensConfiguration = {
-      type = "fluentbit",
-      options = {
-        enable-ecs-log-metadata = "true"
-      }
-    }
-    }, {
-    name      = "${var.env}-${var.limit-handler-name}-container-datadog"
-    image     = "public.ecr.aws/datadog/agent:latest"
-    essential = true
+#     firelensConfiguration = {
+#       type = "fluentbit",
+#       options = {
+#         enable-ecs-log-metadata = "true"
+#       }
+#     }
+#     }, {
+#     name      = "${var.env}-${var.limit-handler-name}-container-datadog"
+#     image     = "public.ecr.aws/datadog/agent:latest"
+#     essential = true
 
-    environment = [
-      { "name" : "DD_TAGS", "value" : "env:${var.env}" }
-    ]
+#     environment = [
+#       { "name" : "DD_TAGS", "value" : "env:${var.env}" }
+#     ]
 
-    portMappings = [{
-      protocol      = "udp",
-      containerPort = 8125
-    }]
-  }])
+#     portMappings = [{
+#       protocol      = "udp",
+#       containerPort = 8125
+#     }]
+#   }])
 
-  lifecycle {
-    ignore_changes = [container_definitions]
-  }
-}
+#   lifecycle {
+#     ignore_changes = [container_definitions]
+#   }
+# }
 
 resource "aws_ecs_cluster" "limit_handler" {
   name = "${var.env}-${var.limit-handler-name}-ecs-cluster"
@@ -187,33 +187,33 @@ resource "aws_ecs_cluster" "limit_handler" {
   }
 }
 
-resource "aws_ecs_service" "limit_handler" {
-  name                               = "${var.env}-${var.limit-handler-name}-ecs-service"
-  cluster                            = aws_ecs_cluster.limit_handler.id
-  task_definition                    = aws_ecs_task_definition.limit_handler.arn
-  desired_count                      = 1
-  deployment_minimum_healthy_percent = 50
-  deployment_maximum_percent         = 200
-  health_check_grace_period_seconds  = 60
-  launch_type                        = "FARGATE"
-  scheduling_strategy                = "REPLICA"
+# resource "aws_ecs_service" "limit_handler" {
+#   name                               = "${var.env}-${var.limit-handler-name}-ecs-service"
+#   cluster                            = aws_ecs_cluster.limit_handler.id
+#   task_definition                    = aws_ecs_task_definition.limit_handler.arn
+#   desired_count                      = 1
+#   deployment_minimum_healthy_percent = 50
+#   deployment_maximum_percent         = 200
+#   health_check_grace_period_seconds  = 60
+#   launch_type                        = "FARGATE"
+#   scheduling_strategy                = "REPLICA"
 
-  # Enable ECS Exec
-  # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-exec.html
-  enable_execute_command = true
+#   # Enable ECS Exec
+#   # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-exec.html
+#   enable_execute_command = true
 
-  network_configuration {
-    security_groups = [aws_security_group.limit_handler.id]
-    subnets         = module.vpc.private_subnets
-  }
+#   network_configuration {
+#     security_groups = [aws_security_group.limit_handler.id]
+#     subnets         = module.vpc.private_subnets
+#   }
 
-  lifecycle {
-    ignore_changes = [task_definition, desired_count]
-  }
+#   lifecycle {
+#     ignore_changes = [task_definition, desired_count]
+#   }
 
-  load_balancer {
-    target_group_arn = aws_alb_target_group.service.arn
-    container_name   = "${var.env}-${var.limit-handler-name}-container"
-    container_port   = 5050
-  }
-}
+#   load_balancer {
+#     target_group_arn = aws_alb_target_group.service.arn
+#     container_name   = "${var.env}-${var.limit-handler-name}-container"
+#     container_port   = 5050
+#   }
+# }
