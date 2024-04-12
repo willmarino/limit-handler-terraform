@@ -105,7 +105,10 @@ resource "aws_iam_role" "lh_task_execution_role" {
             "s3:GetObject"
           ],
           "Resource" : [
+            "arn:aws:s3:::lh-${var.env}-env-files",
+            "arn:aws:s3:::lh-${var.env}-env-files/",
             "arn:aws:s3:::lh-${var.env}-env-files/*",
+            "arn:aws:s3:::lh-${var.env}-env-files/lh-${var.env}-env.txt",
             "${aws_kms_key.lh_env_files_key.arn}"
           ]
         },
