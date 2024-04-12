@@ -77,7 +77,7 @@ resource "aws_iam_role" "lh_task_role" {
 
 
 resource "aws_iam_role" "lh_task_execution_role" {
-  name = "tf-${var.env}-ecs-task-exec-role"
+  name = "lh-${var.env}-ecs-task-exec-role"
 
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
@@ -94,7 +94,7 @@ resource "aws_iam_role" "lh_task_execution_role" {
   })
 
   inline_policy {
-    name = "tf-${var.env}-ecs-task-exec-role-inline-policy"
+    name = "lh-${var.env}-ecs-task-exec-role-inline-policy"
     policy = jsonencode({
       "Version" : "2012-10-17",
       "Statement" : [
