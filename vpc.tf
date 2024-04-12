@@ -25,8 +25,8 @@ module "vpc" {
   database_subnets = ["10.20.7.0/24", "10.20.8.0/24"]
 
   enable_nat_gateway     = true
-  single_nat_gateway     = true
-  one_nat_gateway_per_az = false
+  single_nat_gateway     = false
+  one_nat_gateway_per_az = true
 
   manage_default_security_group = false
   manage_default_route_table    = false
