@@ -38,3 +38,8 @@ variable "cf_origin_cert_body" {
 variable "cf_origin_cert_private_key" {
   description = "cloudflare origin cert private key"
 }
+
+
+variable "bastion_public_key_staging" {
+  description = "bastion host pub key"
+}
