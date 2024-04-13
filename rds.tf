@@ -13,7 +13,7 @@ module "db" {
   vpc_security_group_ids = [aws_security_group.allow_lh_connections.id]
 
   db_name  = "limit_handler"
-  username = "root"
+  username = "admin"
   password = random_password.rds_root_password.result
   port     = 3306
 
