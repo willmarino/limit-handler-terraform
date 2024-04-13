@@ -163,7 +163,7 @@ resource "aws_ecs_task_definition" "limit_handler" {
     essential = true
 
     environment = [
-      for k, v in merge({ DD_TAGS = "env:${var.env}" }, locals.datadog_environment) : {
+      for k, v in merge({ DD_TAGS = "env:${var.env}" }, local.datadog_environment) : {
         name  = k,
         value = v
       }
