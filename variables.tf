@@ -26,6 +26,11 @@ variable "datadog_api_key" {
   type        = string
 }
 
+variable "datadog_site" {
+  description = "Datadog Site host"
+  default     = "us5.datadoghq.com"
+}
+
 variable "cf_origin_cert_body" {
   description = "cloudflare origin cert body"
 }
