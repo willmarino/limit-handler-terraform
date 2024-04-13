@@ -7,14 +7,14 @@ module "db" {
   engine               = "mysql"
   major_engine_version = "8.0"
   engine_version       = "8.0.28"
-  instance_class       = "db.t2.micro"
+  instance_class       = "db.t3.micro"
   allocated_storage    = 8
 
   vpc_security_group_ids = [aws_security_group.allow_lh_connections.id]
 
   db_name  = "limit_handler"
-  username = "root"
-  password = random_password.rds_root_password.result
+  username = "admin"
+  password = random_password.rds_admin_password.result
   port     = 3306
 
   db_subnet_group_name = module.vpc.database_subnet_group_name
@@ -51,7 +51,7 @@ resource "aws_security_group" "allow_lh_connections" {
 }
 
 
-resource "random_password" "rds_root_password" {
+resource "random_password" "rds_admin_password" {
   length  = 25
   special = false
 }
