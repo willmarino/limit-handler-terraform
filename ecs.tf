@@ -118,9 +118,9 @@ resource "aws_ecs_task_definition" "limit_handler" {
     logConfiguration = {
       logDriver = "awsfirelens",
       options = {
-        # https://docs.datadoghq.com/integrations/fluentbit/#configuration-parameters
         Name           = "datadog"
-        Host           = "http-intake.logs.us5.datadoghq.com"
+        # Host           = "http-intake.logs.us5.datadoghq.com"
+        Host           = "datadoghq.com"
         compress       = "gzip"
         TLS            = "on"
         apikey         = var.datadog_api_key
@@ -174,7 +174,8 @@ resource "aws_ecs_task_definition" "limit_handler" {
   }])
 
   lifecycle {
-    ignore_changes = [container_definitions]
+    # ignore_changes = [container_definitions]
+    ignore_changes = []
   }
 }
 
