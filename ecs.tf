@@ -119,13 +119,12 @@ resource "aws_ecs_task_definition" "limit_handler" {
       logDriver = "awsfirelens",
       options = {
         Name           = "datadog"
-        # Host           = "http-intake.logs.us5.datadoghq.com"
-        Host           = "datadoghq.com"
+        Host           = "http-intake.logs.us5.datadoghq.com"
         compress       = "gzip"
         TLS            = "on"
         apikey         = var.datadog_api_key
         dd_service     = "limit-handler"
-        dd_source      = "limit-handler"
+        dd_source      = "node"
         dd_message_key = "log"
         dd_tags        = "env:${var.env}"
         provider       = "ecs"
@@ -164,7 +163,10 @@ resource "aws_ecs_task_definition" "limit_handler" {
     essential = true
 
     environment = [
-      { "name" : "DD_TAGS", "value" : "env:${var.env}" }
+      for k, v in merge({ DD_TAGS = "env:${var.env}" }, locals.datadog_environment) : {
+        name  = k,
+        value = v
+      }
     ]
 
     portMappings = [{
@@ -216,5 +218,22 @@ resource "aws_ecs_service" "limit_handler" {
     target_group_arn = aws_alb_target_group.service.arn
     container_name   = "${var.env}-${var.limit-handler-name}-container"
     container_port   = 5050
+  }
+}
+
+locals {
+  datadog_environment = {
+    DD_API_KEY = var.datadog_api_key
+    DD_SITE    = var.datadog_site
+
+    DD_APM_ENABLED                 = "true"
+    DD_DOGSTATSD_NON_LOCAL_TRAFFIC = "true"
+    DD_APM_NON_LOCAL_TRAFFIC       = "true"
+    DD_PROCESS_AGENT_ENABLED       = "true"
+    DD_LOGS_ENABLED                = "true"
+
+    DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL = "true"
+
+    ECS_FARGATE = "true"
   }
 }
