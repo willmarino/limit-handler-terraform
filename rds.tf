@@ -14,7 +14,7 @@ module "db" {
 
   db_name  = "limit_handler"
   username = "admin"
-  password = random_password.rds_root_password.result
+  password = random_password.rds_admin_password.result
   port     = 3306
 
   db_subnet_group_name = module.vpc.database_subnet_group_name
@@ -51,7 +51,7 @@ resource "aws_security_group" "allow_lh_connections" {
 }
 
 
-resource "random_password" "rds_root_password" {
+resource "random_password" "rds_admin_password" {
   length  = 25
   special = false
 }
