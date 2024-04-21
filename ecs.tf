@@ -192,31 +192,31 @@ resource "aws_ecs_cluster" "limit_handler" {
   }
 }
 
-# resource "aws_ecs_service" "limit_handler" {
-#   name                               = "${var.env}-${var.limit-handler-name}-ecs-service"
-#   cluster                            = aws_ecs_cluster.limit_handler.id
-#   task_definition                    = aws_ecs_task_definition.limit_handler.arn
-#   desired_count                      = 1
-#   deployment_minimum_healthy_percent = 50
-#   deployment_maximum_percent         = 200
-#   health_check_grace_period_seconds  = 60
-#   launch_type                        = "FARGATE"
-#   scheduling_strategy                = "REPLICA"
+resource "aws_ecs_service" "limit_handler" {
+  name                               = "${var.env}-${var.limit-handler-name}-ecs-service"
+  cluster                            = aws_ecs_cluster.limit_handler.id
+  task_definition                    = aws_ecs_task_definition.limit_handler.arn
+  desired_count                      = 1
+  deployment_minimum_healthy_percent = 50
+  deployment_maximum_percent         = 200
+  health_check_grace_period_seconds  = 60
+  launch_type                        = "FARGATE"
+  scheduling_strategy                = "REPLICA"
 
-#   enable_execute_command = true
+  enable_execute_command = true
 
-#   network_configuration {
-#     security_groups = [aws_security_group.limit_handler.id]
-#     subnets         = module.vpc.private_subnets
-#   }
+  network_configuration {
+    security_groups = [aws_security_group.limit_handler.id]
+    subnets         = module.vpc.private_subnets
+  }
 
-#   lifecycle {
-#     ignore_changes = [task_definition, desired_count]
-#   }
+  lifecycle {
+    ignore_changes = [task_definition, desired_count]
+  }
 
-#   load_balancer {
-#     target_group_arn = aws_alb_target_group.service.arn
-#     container_name   = "${var.env}-${var.limit-handler-name}-container"
-#     container_port   = 5050
-#   }
-# }
+  load_balancer {
+    target_group_arn = aws_alb_target_group.service.arn
+    container_name   = "${var.env}-${var.limit-handler-name}-container"
+    container_port   = 5050
+  }
+}
