@@ -119,16 +119,16 @@ resource "aws_ecs_task_definition" "limit_handler" {
       logConfiguration = {
         logDriver = "awsfirelens",
         options = {
-          Name           = "datadog"
-          Host           = "http-intake.logs.us5.datadoghq.com"
-          compress       = "gzip"
-          TLS            = "on"
-          apikey         = var.datadog_api_key
-          dd_service     = "limit-handler"
-          dd_source      = "node"
-          dd_message_key = "log"
-          dd_tags        = "env:${var.env}"
-          provider       = "ecs"
+          Name = "datadog"
+          # Host           = "http-intake.logs.us5.datadoghq.com"
+          # compress       = "gzip"
+          apikey     = var.datadog_api_key
+          dd_service = "limit-handler"
+          dd_source  = "node"
+          # dd_message_key = "log"
+          dd_tags  = "env:${var.env}"
+          TLS      = "on"
+          provider = "ecs"
         }
       }
 
@@ -145,12 +145,12 @@ resource "aws_ecs_task_definition" "limit_handler" {
         protocol      = "tcp"
         containerPort = 5050
       }]
-    }, {
-      image     = "amazon/aws-for-fluent-bit:stable"
-      name      = "${var.env}-${var.limit-handler-name}-log-router"
-      essential = true
 
-      memoryReservation = 50
+      }, {
+
+      essential = true
+      image     = "amazon/aws-for-fluent-bit:latest"
+      name      = "${var.env}-${var.limit-handler-name}-log-router"
 
       firelensConfiguration = {
         type = "fluentbit",
@@ -158,23 +158,27 @@ resource "aws_ecs_task_definition" "limit_handler" {
           enable-ecs-log-metadata = "true"
         }
       }
-    }, {
-      name      = "${var.env}-${var.limit-handler-name}-container-datadog"
-      image     = "public.ecr.aws/datadog/agent:latest"
-      essential = true
 
-      environment = [
-        for k, v in merge({ DD_TAGS = "env:${var.env}" }, local.datadog_environment) : {
-          name  = k,
-          value = v
-        }
-      ]
+      # memoryReservation = 50
 
-      portMappings = [{
-        protocol      = "udp",
-        containerPort = 8125
-      }]
     }
+    # , {
+    #   name      = "${var.env}-${var.limit-handler-name}-container-datadog"
+    #   image     = "public.ecr.aws/datadog/agent:latest"
+    #   essential = true
+
+    #   environment = [
+    #     for k, v in merge({ DD_TAGS = "env:${var.env}" }, local.datadog_environment) : {
+    #       name  = k,
+    #       value = v
+    #     }
+    #   ]
+
+    #   portMappings = [{
+    #     protocol      = "udp",
+    #     containerPort = 8125
+    #   }]
+    # }
   ])
 
   lifecycle {
