@@ -119,16 +119,13 @@ resource "aws_ecs_task_definition" "limit_handler" {
       logConfiguration = {
         logDriver = "awsfirelens",
         options = {
-          Name = "datadog"
-          # Host           = "http-intake.logs.us5.datadoghq.com"
-          # compress       = "gzip"
+          Name       = "datadog"
           apikey     = var.datadog_api_key
           dd_service = "limit-handler"
           dd_source  = "node"
-          # dd_message_key = "log"
-          dd_tags  = "env:${var.env}"
-          TLS      = "on"
-          provider = "ecs"
+          dd_tags    = "env:${var.env}"
+          TLS        = "on"
+          provider   = "ecs"
         }
       }
 
@@ -159,31 +156,11 @@ resource "aws_ecs_task_definition" "limit_handler" {
         }
       }
 
-      # memoryReservation = 50
-
     }
-    # , {
-    #   name      = "${var.env}-${var.limit-handler-name}-container-datadog"
-    #   image     = "public.ecr.aws/datadog/agent:latest"
-    #   essential = true
-
-    #   environment = [
-    #     for k, v in merge({ DD_TAGS = "env:${var.env}" }, local.datadog_environment) : {
-    #       name  = k,
-    #       value = v
-    #     }
-    #   ]
-
-    #   portMappings = [{
-    #     protocol      = "udp",
-    #     containerPort = 8125
-    #   }]
-    # }
   ])
 
   lifecycle {
-    # ignore_changes = [container_definitions]
-    ignore_changes = []
+    ignore_changes = [container_definitions]
   }
 }
 
