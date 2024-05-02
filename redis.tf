@@ -5,7 +5,7 @@ module "redis" {
   environment                = var.env
   vpc_id                     = module.vpc.vpc_id
   availability_zones         = ["us-east-1a", "us-east-1b"]
-  allowed_security_group_ids = [aws_security_group.limit_handler.id]
+  allowed_security_group_ids = [aws_security_group.limit_handler_web.id, aws_security_group.limit_handler_req_util.id]
   subnets                    = module.vpc.database_subnets
   cluster_size               = 1
   instance_type              = "cache.t2.micro"
