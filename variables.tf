@@ -29,7 +29,7 @@ variable "limit_handler_web_name" {
 variable "limit_handler_req_util_name" {
   description = "limit-handler name"
   type        = string
-  default     = "limit-handler-req-util"
+  default     = "limit-handler-ru" // ru == req util
 }
 
 variable "datadog_api_key" {
