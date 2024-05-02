@@ -14,12 +14,23 @@ variable "region" {
   default     = "us-east-1"
 }
 
-variable "limit-handler-name" {
+variable "limit_handler_name" {
   description = "limit-handler name"
   type        = string
   default     = "limit-handler"
 }
 
+variable "limit_handler_web_name" {
+  description = "limit-handler name"
+  type        = string
+  default     = "limit-handler-web"
+}
+
+variable "limit_handler_req_util_name" {
+  description = "limit-handler name"
+  type        = string
+  default     = "limit-handler-ru" // ru == req util
+}
 
 variable "datadog_api_key" {
   description = "datadog api key"

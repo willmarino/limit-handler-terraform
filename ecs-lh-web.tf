@@ -1,6 +1,6 @@
 // Security group for limit handler load balancer
-resource "aws_security_group" "limit_handler_alb" {
-  name   = "${var.env}-${var.limit-handler-name}-lb-sg"
+resource "aws_security_group" "limit_handler_web_alb" {
+  name   = "${var.env}-${var.limit_handler_web_name}-lb-sg"
   vpc_id = module.vpc.vpc_id
 
   ingress {
@@ -26,15 +26,15 @@ resource "aws_security_group" "limit_handler_alb" {
 }
 
 // LH api server security group, only takes in traffic from infra under the ALB security group
-resource "aws_security_group" "limit_handler" {
-  name   = "${var.env}-${var.limit-handler-name}-ecs-sg"
+resource "aws_security_group" "limit_handler_web" {
+  name   = "${var.env}-${var.limit_handler_web_name}-ecs-sg"
   vpc_id = module.vpc.vpc_id
 
   ingress {
     protocol        = "tcp"
     from_port       = 5050
     to_port         = 5050
-    security_groups = [aws_security_group.limit_handler_alb.id]
+    security_groups = [aws_security_group.limit_handler_web_alb.id]
   }
 
   egress {
@@ -46,18 +46,18 @@ resource "aws_security_group" "limit_handler" {
 }
 
 // Load balancer sits in public subnets and is accessible by anyone, forwards traffic http listener --> https listener --> target group
-resource "aws_lb" "limit_handler" {
-  name               = "${var.env}-${var.limit-handler-name}-alb"
+resource "aws_lb" "limit_handler_web" {
+  name               = "${var.env}-${var.limit_handler_web_name}-alb"
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.limit_handler_alb.id]
+  security_groups    = [aws_security_group.limit_handler_web_alb.id]
   subnets            = module.vpc.public_subnets
 
   enable_deletion_protection = false
 }
 
 // Target group houses servers
-resource "aws_alb_target_group" "service" {
-  name        = "${var.env}-${var.limit-handler-name}-lbtg"
+resource "aws_alb_target_group" "limit_handler_web" {
+  name        = "${var.env}-${var.limit_handler_web_name}-lbtg"
   port        = 80
   protocol    = "HTTP"
   vpc_id      = module.vpc.vpc_id
@@ -69,8 +69,8 @@ resource "aws_alb_target_group" "service" {
 }
 
 // redirect http traffic to https listener
-resource "aws_alb_listener" "http" {
-  load_balancer_arn = aws_lb.limit_handler.id
+resource "aws_alb_listener" "limit_handler_web_http" {
+  load_balancer_arn = aws_lb.limit_handler_web.id
   port              = 80
   protocol          = "HTTP"
 
@@ -86,21 +86,21 @@ resource "aws_alb_listener" "http" {
 }
 
 // redirect https traffic to target group
-resource "aws_alb_listener" "https" {
-  load_balancer_arn = aws_lb.limit_handler.id
+resource "aws_alb_listener" "limit_handler_web_https" {
+  load_balancer_arn = aws_lb.limit_handler_web.id
   port              = 443
   protocol          = "HTTPS"
   certificate_arn   = aws_acm_certificate.cf_origin.arn
 
   default_action {
-    target_group_arn = aws_alb_target_group.service.id
+    target_group_arn = aws_alb_target_group.limit_handler_web.id
     type             = "forward"
   }
 }
 
 // Limit handler task definition
-resource "aws_ecs_task_definition" "limit_handler" {
-  family                   = "${var.env}-${var.limit-handler-name}-ecs-task"
+resource "aws_ecs_task_definition" "limit_handler_web" {
+  family                   = "${var.env}-${var.limit_handler_web_name}-ecs-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = 256
@@ -110,7 +110,7 @@ resource "aws_ecs_task_definition" "limit_handler" {
 
   container_definitions = jsonencode([
     {
-      name    = "${var.env}-${var.limit-handler-name}-container"
+      name    = "${var.env}-${var.limit_handler_web_name}-container"
       image   = "${aws_ecr_repository.limit_handler.repository_url}:latest"
       command = ["node", "app.js"]
 
@@ -121,7 +121,7 @@ resource "aws_ecs_task_definition" "limit_handler" {
         options = {
           Name       = "datadog"
           apikey     = var.datadog_api_key
-          dd_service = "limit-handler"
+          dd_service = var.limit_handler_web_name
           dd_source  = "node"
           dd_tags    = "env:${var.env}"
           TLS        = "on"
@@ -130,7 +130,7 @@ resource "aws_ecs_task_definition" "limit_handler" {
       }
 
       environmentFiles = [{
-        value = "arn:aws:s3:::lh-${var.env}-env-files/${var.limit-handler-name}.env",
+        value = "arn:aws:s3:::lh-${var.env}-env-files/${var.limit_handler_name}.env",
         type  = "s3"
       }]
 
@@ -147,7 +147,7 @@ resource "aws_ecs_task_definition" "limit_handler" {
 
       essential = true
       image     = "amazon/aws-for-fluent-bit:latest"
-      name      = "${var.env}-${var.limit-handler-name}-log-router"
+      name      = "${var.env}-${var.limit_handler_web_name}-log-router"
 
       firelensConfiguration = {
         type = "fluentbit",
@@ -164,19 +164,10 @@ resource "aws_ecs_task_definition" "limit_handler" {
   }
 }
 
-resource "aws_ecs_cluster" "limit_handler" {
-  name = "${var.env}-${var.limit-handler-name}-ecs-cluster"
-
-  setting {
-    name  = "containerInsights"
-    value = "enabled"
-  }
-}
-
-resource "aws_ecs_service" "limit_handler" {
-  name                               = "${var.env}-${var.limit-handler-name}-ecs-service"
+resource "aws_ecs_service" "limit_handler_web" {
+  name                               = "${var.env}-${var.limit_handler_web_name}-ecs-service"
   cluster                            = aws_ecs_cluster.limit_handler.id
-  task_definition                    = aws_ecs_task_definition.limit_handler.arn
+  task_definition                    = aws_ecs_task_definition.limit_handler_web.arn
   desired_count                      = 1
   deployment_minimum_healthy_percent = 50
   deployment_maximum_percent         = 200
@@ -187,7 +178,7 @@ resource "aws_ecs_service" "limit_handler" {
   enable_execute_command = true
 
   network_configuration {
-    security_groups = [aws_security_group.limit_handler.id]
+    security_groups = [aws_security_group.limit_handler_web.id]
     subnets         = module.vpc.private_subnets
   }
 
@@ -196,8 +187,8 @@ resource "aws_ecs_service" "limit_handler" {
   }
 
   load_balancer {
-    target_group_arn = aws_alb_target_group.service.arn
-    container_name   = "${var.env}-${var.limit-handler-name}-container"
+    target_group_arn = aws_alb_target_group.limit_handler_web.arn
+    container_name   = "${var.env}-${var.limit_handler_web_name}-container"
     container_port   = 5050
   }
 }
