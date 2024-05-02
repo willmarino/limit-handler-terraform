@@ -112,7 +112,7 @@ resource "aws_ecs_task_definition" "limit_handler_web" {
     {
       name    = "${var.env}-${var.limit_handler_web_name}-container"
       image   = "${aws_ecr_repository.limit_handler.repository_url}:latest"
-      command = ["node", "app.js"]
+      command = ["npm", "run", "start:web"]
 
       essential = true
 
