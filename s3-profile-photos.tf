@@ -1,4 +1,4 @@
-module "env_files" {
+module "env_files_profile_photos" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "~> 3.8.2"
 
