@@ -19,10 +19,10 @@ module "vpc" {
   create_database_nat_gateway_route      = false # No internet access to the database subnets
   create_database_internet_gateway_route = false # No public database access should be created
 
-  azs              = ["${var.region}a", "${var.region}b"]
-  public_subnets   = ["10.20.0.0/24", "10.20.1.0/24"]
-  private_subnets  = ["10.20.3.0/24", "10.20.4.0/24"]
-  database_subnets = ["10.20.7.0/24", "10.20.8.0/24"]
+  azs              = ["${var.region}a"]
+  public_subnets   = ["10.20.0.0/24"]
+  private_subnets  = ["10.20.3.0/24"]
+  database_subnets = ["10.20.7.0/24"]
 
   enable_nat_gateway     = true
   single_nat_gateway     = false
